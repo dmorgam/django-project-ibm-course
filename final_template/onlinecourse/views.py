@@ -164,7 +164,7 @@ def show_exam_result(request, course_id, submission_id):
         
         points += (score / total) * item.grade
 
-    context['grade'] = (points / max_score ) * 100
+    context['grade'] = int((points / max_score ) * 100)
 
     return render(request, 'onlinecourse/exam_result_bootstrap.html', context)
 
