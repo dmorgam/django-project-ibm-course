@@ -64,7 +64,7 @@
                   <div id="exam" class="collapse mt-2">
                       <div class="card">
                         <div class="card-body">
-                          <form id="questionform" action="point to a submit view" method="post">
+                          <form id="questionform" action="/onlinecourse/{{ course.id }}/submit/" method="post">
                               {% for question in lesson.question_set.all %}
                                       <div class="card mt-1">
                                           <div class="card-header"><h5>{{ question.question_text}}</h5></div>

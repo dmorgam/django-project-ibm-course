@@ -111,7 +111,14 @@ def enroll(request, course_id):
          # Add each selected choice object to the submission object
          # Redirect to show_exam_result with the submission id
 def submit(request, course_id):
-    pass
+    enrollment = Enrollment.objects.get(user=request.user.id, course=course_id)
+    submission = Submission.objects.create(enrollment=enrollment)
+    selected_choices = extract_answers(request)
+
+    for x in selected_choices:
+        submission.chocies.add(x)
+
+    return redirect('/onlinecourse/' + str(course_id) + '/submission/'+ str(submission.id) + '/result/')
 
 # <HINT> A example method to collect the selected choices from the exam form from the request object
 def extract_answers(request):
@@ -130,7 +137,35 @@ def extract_answers(request):
         # Get the selected choice ids from the submission record
         # For each selected choice, check if it is a correct answer or not
         # Calculate the total score
-#def show_exam_result(request, course_id, submission_id):
+def show_exam_result(request, course_id, submission_id):
+    context = {}
+    context['course'] = Course.objects.get(id=course_id)
+    submission = Submission.objects.get(id=submission_id)
+    choices = submission.chocies.all()
+    lesson_sel = Question.objects.get(id=choices[0].question.id).lesson
+    context['questions'] = Question.objects.filter(lesson=lesson_sel)
+    context['choices'] = choices
 
+    points = 0
+    max_score = 0
+    for item in context['questions']:
+        max_score += item.grade
+        total = len(item.choice_set.filter(is_correct=True))
+        score = 0
+
+        for choic in item.choice_set.all():
+            if choic in choices:
+                if choic.is_correct:
+                    score += 1
+                else:
+                    score -= 1
+        if score < 0:
+            score = 0
+        
+        points += (score / total) * item.grade
+
+    context['grade'] = (points / max_score ) * 100
+
+    return render(request, 'onlinecourse/exam_result_bootstrap.html', context)
 
 
