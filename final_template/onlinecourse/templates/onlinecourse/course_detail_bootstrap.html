@@ -55,7 +55,7 @@
             https://www.w3schools.com/bootstrap4/bootstrap_collapse.asp-->
 
             {% for lesson in course.lesson_set.all %}
-              {% if user.is_authenticated %}
+              {% if user.is_authenticated and lesson.question_set.count > 0 %}
                 <div class="w-100">
                   <hr>
                   <button class="btn btn-primary mt-1" type="button" data-toggle="collapse" data-target="#exam">
